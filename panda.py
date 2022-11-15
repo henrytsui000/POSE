@@ -9,8 +9,8 @@ class Env(ShowBase):
         self.accept('escape', sys.exit)
         self.disableMouse()
 
-        self.pandaActor = Actor('human.fbx')
-        tex = Loader.loadTexture(self, "./world_people_colors.png")
+        self.pandaActor = Actor('./src/human_model/human.fbx')
+        tex = Loader.loadTexture(self, "./src/texture/world_people_colors.png")
         self.pandaActor.setTexture(tex, 1)
         # self.pandaActor.loadTexture()
         self.pandaActor.setScale(0.5, 0.5, 0.5)
