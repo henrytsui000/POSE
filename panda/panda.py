@@ -1,6 +1,9 @@
 from direct.showbase.ShowBase import ShowBase
 from direct.showbase.Loader import Loader
 from direct.actor.Actor import Actor
+from direct.task import Task
+from math import pi, sin, cos
+
 import sys
 
 class Env(ShowBase):
@@ -10,21 +13,42 @@ class Env(ShowBase):
         self.disableMouse()
         self.src = "../src/"
 
-        self.pandaActor = Actor(self.src + 'human_model/human.fbx')
+        self.pandaActor = Actor(self.src + 'human_model/robot')
+        # self.pandaActor = Actor('../city-models.obj/lpFemale_casual_A-model.obj')
+        self.pandaActor.setScale(10, 10, 10)
+        self.pandaActor.setPos(0, 200, -50)
+        # self.pandaActor.setHpr(0, 90, 0)
+        self.oriarm = None
+
         tex = Loader.loadTexture(self, self.src + "texture/world_people_colors.png")
         self.pandaActor.setTexture(tex, 1)
-        # self.pandaActor.loadTexture()
-        self.pandaActor.setScale(0.5, 0.5, 0.5)
-        # self.pandaActor.setPos(0, 1000, 0)
+
+
+        # print(type(self.pandaActor.getJoints()[0]))
+        print(self.pandaActor.getJoints())
+    
+        # self.pandaActor.control_joint(self, self.pandaActor, "bip Pelvis")
+        self.node = self.pandaActor.controlJoint(None, "modelRoot", "joint9")
+        print(self.node.getHpr())
+        print(self.node.getPos())
+        # print(self.pandaActor.)
+        print(self.oriarm)
+
+        # self.node.setHpr(0, 90, 0)
+        # self.node.setPos(10, 10, 10)
+        self.taskMgr.add(self.rotate_human, "rotate_human")
         self.pandaActor.reparentTo(self.render)
 
-        self.camera.setPos(0, -150, 50)
-        # self.useDrive()
 
-        # self.pandaActor.loop("walk")
-        # self.pandaActor.hide
+    def rotate_human(self, task):
+        angleDegrees = task.time * 50   
+        # print(angleDegrees, self.oriarm)
+        # print(task.time)
+        # self.pandaActor.setHpr(angleDegrees, 0, 0)
 
-
+        self.node.setHpr(0, angleDegrees, 0) 
+        # self.node.setPos(-angleDegrees, 0, 0) 
+        return Task.cont
 
 def main():
     env = Env()
