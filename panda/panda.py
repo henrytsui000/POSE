@@ -22,6 +22,7 @@ class Env(ShowBase):
 
         tex = Loader.loadTexture(self, self.src + "texture/world_people_colors.png")
         self.pandaActor.setTexture(tex, 1)
+        self.dir = 1
 
 
         # print(type(self.pandaActor.getJoints()[0]))
@@ -38,18 +39,21 @@ class Env(ShowBase):
         # self.node.setPos(10, 10, 10)
         self.taskMgr.add(self.rotate_human, "rotate_human")
         self.pandaActor.reparentTo(self.render)
-
+        self.accept("enter", self.chg)
 
     def rotate_human(self, task):
-        angleDegrees = task.time * 50   
+        angleDegrees = 1 * self.dir
         # print(angleDegrees, self.oriarm)
         # print(task.time)
         # self.pandaActor.setHpr(angleDegrees, 0, 0)
 
-        self.node.setHpr(0, angleDegrees, 0) 
+        self.node.setHpr(self.node, 0, 0, angleDegrees) 
         # self.node.setPos(-angleDegrees, 0, 0) 
         return Task.cont
 
+    def chg(self):
+        self.dir *= -1
+    
 def main():
     env = Env()
     env.run()
