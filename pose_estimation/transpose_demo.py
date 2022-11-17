@@ -367,7 +367,7 @@ def main(box_model):
         fps = str(int(fps))
         cv2.putText(img, fps, (7, 70), font, 3, (100, 255, 0), 3, cv2.LINE_AA)
 
-        cv2.imwrite("testing.jpg", img)
+        cv2.imshow("testing", img)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             cv2.destroyAllWindows()
             break
