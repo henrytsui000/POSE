@@ -335,7 +335,7 @@ def main(box_model):
     cam = cv2.VideoCapture(0)
     box_model = box_model.to(DEVICE)
     box_model.eval()
-    model = torch.hub.load('yangsenius/TransPose:main', 'tpr_a4_256x192', pretrained=True)
+    model = torch.hub.load('yangsenius/TransPose:main', 'tph_a4_256x192', pretrained=True)
     model = model.to(DEVICE)
 
     img_dimensions = (256, 192)
@@ -367,6 +367,7 @@ def main(box_model):
         fps = str(int(fps))
         cv2.putText(img, fps, (7, 70), font, 3, (100, 255, 0), 3, cv2.LINE_AA)
 
+        img = cv2.flip(img, 1)
         cv2.imshow("testing", img)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             cv2.destroyAllWindows()
