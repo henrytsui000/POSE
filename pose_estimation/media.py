@@ -13,7 +13,7 @@ class Pose():
         self.pose = mp_pose.Pose(min_detection_confidence=0.5,
                                  min_tracking_confidence=0.5)
 
-    def infernce(self, show=False):
+    def inference(self, show=False):
         # while True:
         _, image = self.cap.read()
         image.flags.writeable = False
@@ -45,7 +45,7 @@ class Pose():
 def main():
     pose = Pose()
     while True:
-        pose.infernce(show=True)
+        pose.inference(show=True)
         if cv2.waitKey(5) & 0xFF == 27:
             break
 
