@@ -37,14 +37,10 @@ class Pose():
         image = cv2.flip(image, 1)
         if show:
             cv2.imshow('MediaPipe Pose', image)
-        # if cv2.waitKey(5) & 0xFF == 27:
-        #     break
         cv2.waitKey(5)
 
     def __del__(self):
         self.cap.release()
-
-
 
 def main():
     pose = Pose()
