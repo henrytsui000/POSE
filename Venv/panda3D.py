@@ -12,8 +12,9 @@ class Env(ShowBase):
         self.disableMouse()
         self.src = src
 
-        self.pandaActor = Actor(self.src + 'human_model/robot')
-        # self.pandaActor = Actor('../city-models.obj/lpFemale_casual_A-model.obj')
+        self.pandaActor = Actor(self.src + 'human_model/human.fbx')
+        # self.pandaActor = Actor(self.src + 'human_model/robot')
+        # self.pandaActor = Actor(self.src + 'city-models.obj/lpFemale_casual_B-model.obj')
         self.pandaActor.setScale(10, 10, 10)
         self.pandaActor.setPos(0, 200, -50)
         self.pandaActor.setHpr(-60, 0, 0)
@@ -23,7 +24,7 @@ class Env(ShowBase):
         self.pandaActor.setTexture(tex, 1)
         self.dir = 1
 
-        print(self.pandaActor.getJoints())
+        print(self.pandaActor.listJoints())
     
         self.node = self.pandaActor.controlJoint(None, "modelRoot", "joint9")
         self.taskMgr.add(self.rotate_human, "rotate_human")

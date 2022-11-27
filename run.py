@@ -7,7 +7,7 @@ import cv2
 import sys
 # sys.path.insert(1, "./panda")
 
-from panda.Venv import Env
+from Venv.panda3D import Env
 from pose_estimation.media import Pose
 
 class controller():
@@ -21,6 +21,7 @@ class controller():
             Thread(target = self.penv, args = ()),
             Thread(target = self.ppe , args = ())
         ]
+        self.human_pose = None
     def run(self):
         # self.env.run()
         logging.info("Start thread")
@@ -50,7 +51,7 @@ class controller():
         """
         logging.info("Start running PE")
         while True:
-            self.pe.infernce(show=True)
+            self.human_pose = self.pe.inference(show=True)
             if cv2.waitKey(5) & 0xFF == 27:
                 break
 
