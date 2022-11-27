@@ -1,0 +1,5 @@
+Panda3D
+opencv-python
+mediapipe
+numpy
+logging
