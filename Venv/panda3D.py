@@ -11,13 +11,13 @@ class Env(ShowBase):
         self.accept('escape', sys.exit)
         self.disableMouse()
         self.src = src
-        self.pandaActor = Actor(self.src + "rp_eric_rigged_001_FBX/rp_eric_rigged_001_ue4.fbx")
+        self.pandaActor = Actor(self.src + "human_model/waiter.fbx")
         self.pandaActor.setScale(0.5, 0.5, 0.5)
         self.pandaActor.setPos(0, 200, -50)
         self.pandaActor.setHpr(0, 0, 0)
         self.oriarm = None
 
-        tex = Loader.loadTexture(self, self.src + "rp_eric_rigged_001_FBX/tex/rp_eric_rigged_001_dif.jpg")
+        tex = Loader.loadTexture(self, self.src + "texture/waiter.jpg")
         self.pandaActor.setTexture(tex, 1)
         self.dir = 1
 
