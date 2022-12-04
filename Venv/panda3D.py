@@ -15,15 +15,16 @@ class Env(ShowBase):
         self.pandaActor = Actor(os.path.join(self.path, "model.fbx"))
         self.pandaActor.setScale(0.5, 0.5, 0.5)
         self.pandaActor.setPos(0, 200, -50)
-        self.pandaActor.setHpr(0, 0, 0)
+        self.pandaActor.setHpr(180, 0, 0)
 
         tex = Loader.loadTexture(self, os.path.join(self.path, "texture.jpg"))
         self.pandaActor.setTexture(tex, 1)
         self.dir = 0
 
         print(self.pandaActor.listJoints())
-
-        with open(os.path.join(self.path[1:], "config.json"), "r") as read_config:
+        if src == "../src/": src = "./src/"
+        self.path = src + model
+        with open(os.path.join(self.path, "config.json"), "r") as read_config:
             config = json.load(read_config)
         self.joint_list = ["CR", "UAR", "LAR", "CL", "UAL", "LAL"]
 
@@ -36,7 +37,7 @@ class Env(ShowBase):
                     config[joint_name]["real_joint"])
 
         self.taskMgr.add(self.rotate_human_joint, "rotate_human")
-        self.taskMgr.add(self.rotate_human, "rotate_human")
+        # self.taskMgr.add(self.rotate_human, "rotate_human")
         self.pandaActor.reparentTo(self.render)
         
         # Debug Function
@@ -47,7 +48,10 @@ class Env(ShowBase):
         return Task.cont
 
     def update_pos_target(self, update_dict):
-        self.joint = update_dict
+        print(update_dict)
+        if update_dict is not None:
+            for joint_name, deg in update_dict.items():
+                self.rotate_target[joint_name] = (0, 0, deg-90)
         return Task.cont
 
     def rotate_human_joint(self, task):
@@ -63,8 +67,8 @@ class Env(ShowBase):
 
     def chg(self):
         self.dir += 30
-        print(self.dir)
-        self.rotate_target["CR"] = (self.dir, 0, 90)
+        # print(self.dir)
+        self.rotate_target["CR"] = (0, self.dir, 0)
 
     def command(self, args):
         print(args)
