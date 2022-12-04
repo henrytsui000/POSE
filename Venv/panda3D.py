@@ -2,54 +2,38 @@ from direct.showbase.ShowBase import ShowBase
 from direct.showbase.Loader import Loader
 from direct.actor.Actor import Actor
 from direct.task import Task
-
+import json
+import os 
 import sys
 
 class Env(ShowBase):
-    def __init__(self, src="../src/"):
+    def __init__(self, src="../src/", model = "waiter"):
         super().__init__(self)
         self.accept('escape', sys.exit)
         self.disableMouse()
-        self.src = src
-        self.pandaActor = Actor(self.src + "human_model/waiter.fbx")
+        self.path = src + model
+        self.pandaActor = Actor(os.path.join(self.path, "model.fbx"))
         self.pandaActor.setScale(0.5, 0.5, 0.5)
         self.pandaActor.setPos(0, 200, -50)
         self.pandaActor.setHpr(0, 0, 0)
-        self.oriarm = None
 
-        tex = Loader.loadTexture(self, self.src + "texture/waiter.jpg")
+        tex = Loader.loadTexture(self, os.path.join(self.path, "texture.jpg"))
         self.pandaActor.setTexture(tex, 1)
         self.dir = 0
 
         print(self.pandaActor.listJoints())
 
-        joint_trans = {
-            "CR" : "clavicle_r",
-            "UAR": "upperarm_r",
-            "LAR": "lowerarm_r",
-
-            "CL" : "clavicle_l",
-            "UAL": "upperarm_l",
-            "LAL": "lowerarm_l",
-        }
-
-        init_joint = {
-            "CR" : ( 180, 0, 90),
-            "UAR": ( 0, 0, 0),
-            "LAR": ( 0, 0, 0),
-
-            "CL" : ( 0, 0, 90),
-            "UAL": ( 0, 0, 0),
-            "LAL": ( 0, 0, 0),
-        }
+        with open(os.path.join(self.path[1:], "config.json"), "r") as read_config:
+            config = json.load(read_config)
+        self.joint_list = ["CR", "UAR", "LAR", "CL", "UAL", "LAL"]
 
         self.joint_dict = dict()
         self.rotate_target = dict()
-        self.joint_list = ["CR", "UAR", "LAR", "CL", "UAL", "LAL"]
         for joint_name in self.joint_list:
-            self.rotate_target[joint_name] = init_joint[joint_name]
+            self.rotate_target[joint_name] = config[joint_name]["init_degree"]
             self.joint_dict[joint_name] = \
-                self.pandaActor.controlJoint(None, "modelRoot", joint_trans[joint_name])
+                self.pandaActor.controlJoint(None, "modelRoot",\
+                    config[joint_name]["real_joint"])
 
         self.taskMgr.add(self.rotate_human_joint, "rotate_human")
         self.taskMgr.add(self.rotate_human, "rotate_human")
@@ -92,5 +76,3 @@ def main():
     
 if __name__ == "__main__":
     main()
-
-
