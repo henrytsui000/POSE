@@ -19,35 +19,52 @@ class Env(ShowBase):
 
         tex = Loader.loadTexture(self, self.src + "texture/waiter.jpg")
         self.pandaActor.setTexture(tex, 1)
-        self.dir = 1
+        self.dir = 0
 
         print(self.pandaActor.listJoints())
 
         joint_trans = {
+            "CR" : "clavicle_r",
             "UAR": "upperarm_r",
             "LAR": "lowerarm_r",
+
+            "CL" : "clavicle_l",
             "UAL": "upperarm_l",
             "LAL": "lowerarm_l",
         }
 
+        init_joint = {
+            "CR" : ( 180, 0, 90),
+            "UAR": ( 0, 0, 0),
+            "LAR": ( 0, 0, 0),
+
+            "CL" : ( 0, 0, 90),
+            "UAL": ( 0, 0, 0),
+            "LAL": ( 0, 0, 0),
+        }
+
         self.joint_dict = dict()
         self.rotate_target = dict()
-        self.joint_list = ["UAR", "UAL", "LAR", "LAL"]
+        self.joint_list = ["CR", "UAR", "LAR", "CL", "UAL", "LAL"]
         for joint_name in self.joint_list:
-            self.rotate_target[joint_name] = (60, 30, 90)
+            self.rotate_target[joint_name] = init_joint[joint_name]
             self.joint_dict[joint_name] = \
                 self.pandaActor.controlJoint(None, "modelRoot", joint_trans[joint_name])
 
-        self.node = self.pandaActor.controlJoint(None, "modelRoot", "upperarm_r")
         self.taskMgr.add(self.rotate_human_joint, "rotate_human")
+        self.taskMgr.add(self.rotate_human, "rotate_human")
         self.pandaActor.reparentTo(self.render)
         
         # Debug Function
         self.accept("enter", self.chg)
 
+    def rotate_human(self, task):
+        self.pandaActor.setHpr(self.pandaActor, 1, 0, 0)
+        return Task.cont
 
     def update_pos_target(self, update_dict):
         self.joint = update_dict
+        return Task.cont
 
     def rotate_human_joint(self, task):
         for joint_name in self.joint_list:
@@ -61,7 +78,9 @@ class Env(ShowBase):
         return Task.cont
 
     def chg(self):
-        self.dir *= -1
+        self.dir += 30
+        print(self.dir)
+        self.rotate_target["CR"] = (self.dir, 0, 90)
 
     def command(self, args):
         print(args)
