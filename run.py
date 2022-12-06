@@ -38,7 +38,9 @@ class controller():
         This is the function which maintain the panda3d environemt        
         """
         logging.info("Start running ENV")
-        time.sleep(5)
+        while True:
+            self.env.update_pos_target(self.human_pose)
+            time.sleep(5e-2)
         self.env.chg()
         # self.env.run()
         
