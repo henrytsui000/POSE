@@ -17,8 +17,11 @@ In the future, we hope to deploy the system to various private devices through t
 $conda create -n POSE python=3.8
 $conda activate POSE
 $pip install -r requirements.txt
+# If you aren't M1 user, use this:
+# $pip install mediapipe
 # If you are M1 user, use this:
-# $pip install mediapipe-silicon   
+# $pip install mediapipe-silicon
+
 ```
 
 # Overview
