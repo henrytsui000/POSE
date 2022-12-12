@@ -20,6 +20,8 @@ class Pose():
         image.flags.writeable = False
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         results = self.pose.process(image)
+        if results.pose_landmarks == None:
+            return
         if results.pose_landmarks:
             PL = landmark_pb2.NormalizedLandmarkList(
             landmark = [
@@ -32,9 +34,7 @@ class Pose():
         joint_vec = {
             "CR" : UAR, 
         }
-        print(LAL.z, )
-        posx, posy = RAL.x, RAL.y
-        posx, posy = RAL.x, RAL.y
+        # print(UAR)
         # Draw the pose annotation on the image.
         image.flags.writeable = True
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
@@ -53,7 +53,6 @@ class Pose():
 
         if show:
             cv2.imshow('MediaPipe Pose', image)
-        cv2.waitKey(5)
         return joint_vec
         
 
