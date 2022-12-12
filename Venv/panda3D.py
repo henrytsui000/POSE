@@ -51,7 +51,7 @@ class Env(ShowBase):
         print(update_dict)
         if update_dict is not None:
             for joint_name, deg in update_dict.items():
-                self.rotate_target[joint_name] = (0, 0, deg-90)
+                self.rotate_target[joint_name] = (90, 0, deg-90)
         return Task.cont
 
     def rotate_human_joint(self, task):

@@ -32,7 +32,7 @@ class Pose():
         joint_vec = {
             "CR" : UAR, 
         }
-        # print(UAR)
+        print(LAL.z, )
         posx, posy = RAL.x, RAL.y
         posx, posy = RAL.x, RAL.y
         # Draw the pose annotation on the image.
