@@ -12,7 +12,7 @@ class Pose():
     def __init__(self):
         self.cap = cv2.VideoCapture(0)
         self.pose = mp_pose.Pose(min_detection_confidence=0.5,
-                                 min_tracking_confidence=0.5)
+                                 min_tracking_confidence=0.5)   # work as image recognition processor
 
     def inference(self, show=False):
         # while True:
@@ -25,12 +25,16 @@ class Pose():
         if results.pose_landmarks:
             PL = landmark_pb2.NormalizedLandmarkList(
             landmark = [
-                results.pose_landmarks.landmark[i] for i in range(11, 17)
+                results.pose_landmarks.landmark[i] for i in range(11, 17)  # joint number(0:32)
                 ]
             )
         RAL = results.pose_landmarks.landmark[12]
         LAL = results.pose_landmarks.landmark[14]
         UAR = math.degrees(np.arctan2(LAL.y - RAL.y, LAL.x - RAL.x))
+        # print(LAL.x, LAL.y, LAL.z)
+        print(results.pose_landmarks)
+        # Plot Pose landmarks in 3D.
+        mp_drawing.plot_landmarks(results.pose_world_landmarks, mp_pose.POSE_CONNECTIONS) 
         joint_vec = {
             "CR" : UAR, 
         }
@@ -42,7 +46,8 @@ class Pose():
         image,
         results.pose_landmarks,
         mp_pose.POSE_CONNECTIONS,
-        landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style())\
+        landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style()
+        )
         
         h, w, _ = image.shape
         cv2.circle(image, (int(RAL.x*w), int(RAL.y*h)), 20, (0, 0, 255), -1)
@@ -64,10 +69,13 @@ def main():
     # print(ret)
         
     while True:
-        ret = pose.inference(show=True)
-        print(ret)
-        if cv2.waitKey(5) & 0xFF == 27:
+        ret = pose.inference(show=True) #return joint_vec
+        # print(ret)
+        if cv2.waitKey(5) & 0xFF == 27: # ESC=27
             break
+    pose.__del__()
 
 if __name__ == "__main__":
     main()
+
+

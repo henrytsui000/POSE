@@ -21,13 +21,13 @@ class Env(ShowBase):
         self.pandaActor.setTexture(tex, 1)
         self.dir = 0
 
-        print(self.pandaActor.listJoints())
+        # print(self.pandaActor.listJoints())
         if src == "../src/": src = "./src/"
         self.path = src + model
         with open(os.path.join(self.path, "config.json"), "r") as read_config:
             config = json.load(read_config)
         self.joint_list = ["CR", "UAR", "LAR", "CL", "UAL", "LAL"]
-
+        print(config)
         self.joint_dict = dict()
         self.rotate_target = dict()
         for joint_name in self.joint_list:
@@ -41,7 +41,41 @@ class Env(ShowBase):
         self.pandaActor.reparentTo(self.render)
         
         # Debug Function
-        self.accept("enter", self.chg)
+        self.dx = 0
+        self.dy = 0
+        self.dz = 0
+        self.accept("arrow_up", self.xp, ["CR"])
+        self.accept("arrow_up-repeat", self.xp, ["CR"])
+        self.accept("arrow_down", self.xn, ["CR"])
+        self.accept("arrow_down-repeat", self.xn, ["CR"])
+        self.accept("arrow_left", self.yp, ["CR"])
+        self.accept("arrow_left-repeat", self.yp, ["CR"])
+        self.accept("arrow_right", self.yn, ["CR"])
+        self.accept("arrow_right-repeat", self.yn, ["CR"])
+        self.accept(".", self.zp, ["CR"])
+        self.accept(".-repeat", self.zp, ["CR"])
+        self.accept(",", self.zn, ["CR"])
+        self.accept(",-repeat", self.zn, ["CR"])
+
+    def xp(self, joint_name):
+        self.dx += 10
+        print(self.dx, self.dy, self.dz)
+    def xn(self, joint_name):
+        self.dx -= 10
+        print(self.dx, self.dy, self.dz)
+    def yp(self, joint_name):
+        self.dy += 10
+        print(self.dx, self.dy, self.dz)
+    def yn(self, joint_name):
+        self.dy -= 10
+        print(self.dx, self.dy, self.dz)
+    def zp(self, joint_name):
+        self.dz += 10
+        print(self.dx, self.dy, self.dz)
+    def zn(self, joint_name):
+        self.dz -= 10
+        print(self.dx, self.dy, self.dz)
+
 
     def rotate_human(self, task):
         self.pandaActor.setHpr(self.pandaActor, 1, 0, 0)
@@ -55,6 +89,9 @@ class Env(ShowBase):
         return Task.cont
 
     def rotate_human_joint(self, task):
+
+        self.rotate_target["LAR"] = (self.dx, self.dy, self.dz)
+
         for joint_name in self.joint_list:
             self.joint_dict[joint_name].setHpr(*self.rotate_target[joint_name])
         return Task.cont
