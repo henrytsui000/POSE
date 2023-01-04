@@ -1,7 +1,13 @@
 from direct.showbase.ShowBase import ShowBase
-from direct.showbase.Loader import Loader
 from direct.actor.Actor import Actor
 from direct.task import Task
+
+from CCDIK.ik_chain import IKChain
+from CCDIK.ik_actor import IKActor
+from CCDIK.utils import *
+
+from direct.showbase.Loader import Loader
+
 import json
 import os 
 import sys
@@ -15,25 +21,27 @@ class Env(ShowBase):
                             format='%(asctime)s %(levelname)-4s %(message)s',
                             datefmt='%m-%d %H:%M',)
         self.accept('escape', sys.exit)
-        self.disableMouse()
+        # self.disableMouse()
         self.path = src + model
         self.pandaActor = Actor(os.path.join(self.path, "model.fbx"))
         self.pandaActor.setScale(0.5, 0.5, 0.5)
         self.pandaActor.setPos(0, 200, -50)
         self.pandaActor.setHpr(0, 0, 0)
 
+
         tex = Loader.loadTexture(self, os.path.join(self.path, "texture.jpg"))
         self.pandaActor.setTexture(tex, 1)
         self.dir = 0
-        logging.info("test")
 
-        print(self.pandaActor.listJoints())
+        self.ik_actor = IKActor( self.pandaActor )
+
+        # print(self.pandaActor.listJoints())
         if src == "../src/": src = "./src/"
         self.path = src + model
         with open(os.path.join(self.path, "config.json"), "r") as read_config:
             config = json.load(read_config)
         self.joint_list = ["CR", "UAR", "LAR", "CL", "UAL", "LAL"]
-        print(config)
+        # print(config)
         self.joint_dict = dict()
         self.rotate_target = dict()
         for joint_name in self.joint_list:
@@ -44,7 +52,17 @@ class Env(ShowBase):
 
         self.taskMgr.add(self.rotate_human_joint, "rotate_human")
         # self.taskMgr.add(self.rotate_human, "rotate_human")
-        self.pandaActor.reparentTo(self.render)
+
+        self.root = render.attach_new_node("Root")
+
+        # self.pandaActor.reparentTo(self.render)
+        self.ik_actor.reparent_to( self.render )
+        
+        logging.debug("dd")
+        print(self.ik_actor.actor.listJoints())
+        logging.debug("DSAF")
+        self.tar = create_point( thickness=10000 )
+        render.attach_new_node( self.tar)
         
         self.UAR_t = copy.deepcopy(self.joint_dict["LAR"])
         logging.info("success deepcopy uar")

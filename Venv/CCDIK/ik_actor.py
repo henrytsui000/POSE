@@ -1,15 +1,19 @@
 from direct.actor.Actor import Actor
 from .ik_chain import IKChain
-
+from direct.showbase.Loader import Loader
+import os
 class IKActor():
 
-    def __init__( self, model ):
+    def __init__( self, model, path):
 
         self.model = model
 
         self.character_node = self.model.find("-Character")
         self.actor = Actor(self.character_node)
 
+        tex = Loader.loadTexture(self, path)
+        self.actor.setTexture(tex, 1)
+        
         self.parent = None
 
         self.control_nodes = {}
