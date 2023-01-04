@@ -25,7 +25,7 @@ class Env(ShowBase):
         tex = Loader.loadTexture(self, os.path.join(self.path, "texture.jpg"))
         self.pandaActor.setTexture(tex, 1)
         self.dir = 0
-        
+        logging.info("test")
 
         print(self.pandaActor.listJoints())
         if src == "../src/": src = "./src/"
