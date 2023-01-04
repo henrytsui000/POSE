@@ -3,6 +3,9 @@ import cv2
 import mediapipe as mp
 import numpy as np
 import math
+import matplotlib.pyplot as plt
+
+
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
@@ -32,9 +35,10 @@ class Pose():
         LAL = results.pose_landmarks.landmark[14]
         UAR = math.degrees(np.arctan2(LAL.y - RAL.y, LAL.x - RAL.x))
         # print(LAL.x, LAL.y, LAL.z)
+        mp_drawing.plot_landmarks(results.pose_world_landmarks, mp_pose.POSE_CONNECTIONS) 
+
         print(results.pose_landmarks)
         # Plot Pose landmarks in 3D.
-        mp_drawing.plot_landmarks(results.pose_world_landmarks, mp_pose.POSE_CONNECTIONS) 
         joint_vec = {
             "CR" : UAR, 
         }
@@ -69,9 +73,9 @@ def main():
     # print(ret)
         
     while True:
-        ret = pose.inference(show=True) #return joint_vec
+        ret = pose.inference(show=False) #return joint_vec
         # print(ret)
-        if cv2.waitKey(5) & 0xFF == 27: # ESC=27
+        if cv2.waitKey(1) & 0xFF == 27: # ESC=27
             break
     pose.__del__()
 

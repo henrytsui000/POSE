@@ -56,7 +56,10 @@ class Env(ShowBase):
         self.accept(".-repeat", self.zp, ["CR"])
         self.accept(",", self.zn, ["CR"])
         self.accept(",-repeat", self.zn, ["CR"])
+        self.accept("enter", self.rst)
 
+    def rst(self, ):
+        self.dx = self.dy = self.dz = 0
     def xp(self, joint_name):
         self.dx += 10
         print(self.dx, self.dy, self.dz)
@@ -90,7 +93,7 @@ class Env(ShowBase):
 
     def rotate_human_joint(self, task):
 
-        self.rotate_target["LAR"] = (self.dx, self.dy, self.dz)
+        self.rotate_target["UAR"] = (self.dx, self.dy, self.dz)
 
         for joint_name in self.joint_list:
             self.joint_dict[joint_name].setHpr(*self.rotate_target[joint_name])
