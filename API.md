@@ -13,6 +13,12 @@ class Pose(...):
     def __del__(self):
         pass
 ```
+# MediaPipe
+### POSE_WORLD_LANDMARKS
+Another list of pose landmarks in world coordinates. Each landmark consists of the following:
+
+x, y and z: Real-world 3D coordinates in meters with the origin at the center between hips.
+visibility: Identical to that defined in the corresponding pose_landmarks.
 
 # Env
 ```python
@@ -22,3 +28,4 @@ class Env(...):
     def run(self):
         pass
 ```
+
