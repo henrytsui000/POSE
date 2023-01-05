@@ -42,7 +42,7 @@ class Pose():
                 .landmark[mp_pose.PoseLandmark(idx).value] 
                         for idx, joint_name in enumerate(joint_names, start=11)
         } 
-        nor = self.get_len(self.joint_to_vec(joint_info["L_sho"], joint_info["R_sho"]))
+        nor_vec = self.joint_to_vec(joint_info["L_sho"], joint_info["R_sho"])
 
         joint_vec_dict = {
             "LH": ("L_sho", "L_wri"),
@@ -51,11 +51,12 @@ class Pose():
             "LH_D": ("L_elb", "L_wri"),
             "RH_U": ("R_sho", "R_elb"),
             "RH_D": ("R_elb", "R_wri"),
+            "test" : ("L_sho", "R_sho")
         }
         for key, (S, T) in joint_vec_dict.items():
-            joint_info[key] = self.joint_to_vec(joint_info[S], joint_info[T], nor) 
+            joint_info[key] = self.joint_to_vec(joint_info[S], joint_info[T], nor_vec) 
 
-        # logging.info(joint_info)
+        logging.debug(joint_info["test"])
         
         mp_drawing.plot_landmarks(results.pose_world_landmarks, mp_pose.POSE_CONNECTIONS) 
         # Draw the pose annotation on the image.
@@ -82,12 +83,22 @@ class Pose():
     def get_len(self, vec):
         return math.sqrt(sum(i**2 for i in vec))
     
-    def joint_to_vec(self, start, end, nor = None) -> tuple:
+    def rotate(self, vec, theta, z):
+        px, _, py = vec
+        qx = px * math.cos(theta)-py * math.sin(theta)
+        qy = px * math.sin(theta)+py * math.cos(theta)
+        return qx, qy, z
+
+
+    def joint_to_vec(self, start, end, nor_vec = None) -> tuple:
         start = self.getxyz(start)
         end = self.getxyz(end)
         vec = tuple(map(lambda i, j: i - j, start, end))
-        if not nor is None:
+        if not nor_vec is None:
+            nor = self.get_len((nor_vec[0], nor_vec[2]))
             vec = tuple(l/nor for l in vec)
+            theta = math.atan2(nor_vec[2], nor_vec[0])
+            vec = self.rotate(vec, -theta, vec[1])
         return vec
     
     def __del__(self):
@@ -95,11 +106,9 @@ class Pose():
 
 def main():
     pose = Pose()
-    # print(ret)
         
     while True:
         ret = pose.inference(show=True) #return joint_vec
-        # print(ret)
         if cv2.waitKey(1) & 0xFF == 27: # ESC=27
             break
     pose.__del__()
