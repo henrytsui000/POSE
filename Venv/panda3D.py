@@ -49,6 +49,11 @@ class Env(ShowBase):
             self.joint_dict[joint_name] = \
                 self.pandaActor.controlJoint(None, "modelRoot",\
                     config[joint_name]["real_joint"])
+        print(self.pandaActor.exposeJoint(None, "modelRoot", "upperarm_r").getPos())
+        print("="*10)
+
+        self.pandaActor.ls()
+        print("="*10)
 
         self.taskMgr.add(self.rotate_human_joint, "rotate_human")
         # self.taskMgr.add(self.rotate_human, "rotate_human")

@@ -4,15 +4,16 @@ from direct.showbase.Loader import Loader
 import os
 class IKActor():
 
-    def __init__( self, model, path):
+    def __init__( self, model, path = None):
 
         self.model = model
 
         self.character_node = self.model.find("-Character")
         self.actor = Actor(self.character_node)
-
-        tex = Loader.loadTexture(self, path)
-        self.actor.setTexture(tex, 1)
+        
+        if not path is None:
+            tex = Loader.loadTexture(self, path)
+            self.actor.setTexture(tex, 1)
         
         self.parent = None
 

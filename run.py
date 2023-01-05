@@ -7,13 +7,13 @@ import cv2
 import sys
 # sys.path.insert(1, "./panda")
 
-from Venv.panda3D import Env
+from Venv.PandaWithIK import Env
 from pose_estimation.media import Pose
 
 class controller():
     def __init__(self):
         logging.basicConfig(level=logging.INFO,
-                            format='%(asctime)s %(levelname)-4s %(message)s',
+                            format='%(asctime)s %(filename)s %(levelname)-4s %(message)s',
                             datefmt='%m-%d %H:%M',)
         self.env = Env("./src/")
         self.pe = Pose()
@@ -40,6 +40,7 @@ class controller():
         logging.info("Start running ENV")
         while True:
             self.env.update_pos_target(self.human_pose)
+            # self.env.move_target(self.human_pose)
             time.sleep(5e-2)
         self.env.chg()
         # self.env.run()
