@@ -1,9 +1,7 @@
 from direct.showbase.ShowBase import ShowBase
 from direct.actor.Actor import Actor
 from direct.task import Task
-
 from direct.gui.OnscreenImage import OnscreenImage
-
 import sys
 
 from CCDIK.ik_chain import IKChain
@@ -53,7 +51,7 @@ class Env(ShowBase):
         #     self.ik_chain.set_hinge_constraint( name, LVector3f.unit_x(),
         #             min_ang=-math.pi*0.6, max_ang=math.pi*0.6 )
         self.ik_chain.debug_display( line_length=0.5 )   
-        self.ik_actor.actor.ls()
+        # self.ik_actor.actor.ls()
         print(self.ik_actor.actor.exposeJoint(None, "modelRoot", "upperarm_r").getPos())
         print(self.ik_actor.actor.exposeJoint(None, "modelRoot", "upperarm_l").getPos())
         tar = create_point( thickness=10 )
@@ -103,12 +101,37 @@ class Env(ShowBase):
         self.ik_chain.update_ik()
         return Task.cont
     
-    def vec_to_world(self, vec, start, ):
+    def rotate(self, vec, angle):
+        px, py, _ = vec
+        qx = px * math.cos(angle) - py * math.sin(angle)
+        qy = px * math.sin(angle) + py * math.cos(angle)
+        return qx, qy
         
+    def get_len(self, vec):
+        return math.sqrt(sum(i**2 for i in vec))
+    
+    def vec_to_world(self, vec, bas, ref):
+        thetav = math.atan2(vec[1], vec[0])
+        thetab = math.atan2(bas[1], bas[0])
+        logging.info(f"deg{thetav} / {thetab}")
+        x, y = self.rotate(vec, thetab - thetav)
+        x *= self.get_len(bas)
+        y *= self.get_len(bas)
+        z = vec[-1] * self.get_len(bas)
+        logging.info(f"len {LVector3f(x, y, z)}")
+        tar = LVector3f(x, y, z) + ref
+        return tar
     
     def nor2real(self, normal):
-        
-        return normal
+        UAR = self.ik_actor.actor.exposeJoint(None, "modelRoot", "upperarm_r").getPos()
+        UAL = self.ik_actor.actor.exposeJoint(None, "modelRoot", "upperarm_l").getPos()
+        bas = UAL - UAR
+        normal = (1, 0, 0)
+        ret = self.vec_to_world(normal, bas, UAL)
+        logging.info(f"{bas} - {ret}")
+        # print(ret)
+        # self.vec_to_world(normal, bas)
+        return ret
     
     def debug(self,):
         # Debug Function 
