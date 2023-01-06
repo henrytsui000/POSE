@@ -60,7 +60,6 @@ class Env(ShowBase):
                 #         min_ang=-(math.pi * 0.85), max_ang=0 )
                 # self.ik_chain.set_hinge_constraint( "lowerarm_l", LVector3f(0,1,1),
                 #         min_ang=-(math.pi * 0.45), max_ang=(math.pi * 0.35) )
-            # self.ik_chain.debug_display( line_length=0.5 )  
             if self.DebugMode:
                 self.ik_chain[target].debug_display(line_length=0.5)   
             tar = create_point( thickness=1 )
