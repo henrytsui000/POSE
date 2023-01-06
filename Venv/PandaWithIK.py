@@ -18,12 +18,12 @@ import logging
 import copy
 
 class Env(ShowBase):
-    def __init__(self, src="../src/", model = "waiter"):
+    def __init__(self, src="../src/", model = "waiter", debug = True):
         super().__init__(self)
         logging.basicConfig(level=logging.DEBUG,
                             format='%(asctime)s %(levelname)-4s %(message)s',
                             datefmt='%m-%d %H:%M',)
-        self.DebugMode = True
+        self.DebugMode = debug
         
         logging.info("Loading model")
         self.path = src + model
@@ -34,30 +34,57 @@ class Env(ShowBase):
         
         logging.info("Setup IK chain")
         
-        self.target_list = ["LH", "RH"]
+        self.target_list = ["LH_D", "RH_D", "LH_U", "RH_U"]
         # , "LF", "RF"]
         self.base_dict = {
-            "RH" : ("upperarm_r", "upperarm_l"),
-            "LH" : ("upperarm_l", "upperarm_r"),
+            "LH_U" : ("upperarm_l", "upperarm_r"),
+            "LH_D" : ("lowerarm_l", "upperarm_l"),
+            "RH_U" : ("upperarm_r", "upperarm_l"),
+            "RH_D" : ("lowerarm_r", "upperarm_r"),
+        }
+        self.chain_list_dict = {
+            "LH_U" : ["upperarm_l", "lowerarm_l"],
+            "LH_D" : ["lowerarm_l", "hand_l"],
+            "RH_U" : ["upperarm_r", "lowerarm_r"],
+            "RH_D" : ["lowerarm_r", "hand_r"],
         }
         
-        self.chain_list_dict = {"LH" : ["upperarm_l", "lowerarm_l", "hand_l"],
-                                "RH" : ["upperarm_r", "lowerarm_r", "hand_r"]}
+        self.joint_constrain = {
+            "upperarm_l" : ("ball",  ("A" , (-1, 1))),
+            "lowerarm_l" : ("ball", ("y" , (-1, 1))),
+            "upperarm_r" : ("ball",  ("A" , (-1, 1))),
+            "lowerarm_r" : ("ball", ("y" , (-1, 1))),
+        }
+        
+        dir_map = {
+            "x" : LVector3f.unit_x(),
+            "y" : LVector3f.unit_y(),
+            "z" : LVector3f.unit_z(),
+        }
+        
         self.ik_chain = dict()
         self.ik_target = dict()
-        tar = dict()
         for target in self.target_list:
             joint_names = self.chain_list_dict[target]
             self.ik_chain[target] = self.ik_actor.create_ik_chain(joint_names)
             if self.DebugMode:
-                self.ik_chain[target].debug_display(line_length=0.5)   
-            tar = create_point( thickness=1 )
+                self.ik_chain[target].debug_display(line_length=0.5)
+            tar = create_point(thickness = 10)
             self.ik_target[target] = render.attach_new_node(tar)
             
-            # for name in joint_names:
-            #     self.ik_chain.set_hinge_constraint( name, LVector3f.unit_x(),
-            #             min_ang=-math.pi*0.6, max_ang=math.pi*0.6 )
-            
+            for name in joint_names:
+                if name in self.joint_constrain:
+                    constrain_type, constrain_tup = self.joint_constrain[name]
+                    dir, (MIN, MAX) = constrain_tup
+                    if constrain_type == "ball":
+                        self.ik_chain[target].set_ball_constraint(name,
+                                min_ang=math.pi*MIN, max_ang=math.pi*MAX)
+                    elif constrain_type == "hinge":
+                        self.ik_chain[target].set_hinge_constraint( name, dir_map[dir],
+                                min_ang=math.pi*MIN, max_ang=math.pi*MAX)
+                    elif constrain_type == "static":
+                        self.ik_chain[target].set_static(name)
+                        
             self.ik_chain[target].set_target(self.ik_target[target])
             
         self.task_mgr.add( self.move_target, "MoveTarget")
@@ -66,6 +93,7 @@ class Env(ShowBase):
         logging.info("Setup camera")
         self.camera_setup()
         
+        self.dx, self.dy, self.dz = 0, 0, 0
         if self.DebugMode:
             self.debug_setup()
         
@@ -86,10 +114,10 @@ class Env(ShowBase):
         return Task.cont
     
     def move_target(self, task):
-        if not "LH" in self.joint_target:
-            return Task.cont
         for target in self.target_list:
-            joint_tar = self.nor2real(self.joint_target[target], target)
+            joint_tar = (self.dx, self.dy, self.dz)
+            if not self.DebugMode and target in self.joint_target:
+                joint_tar = self.nor2real(self.joint_target[target], target)
             self.ik_target[target].setPos(joint_tar)
             self.ik_chain[target].update_ik()
         return Task.cont
@@ -122,17 +150,14 @@ class Env(ShowBase):
     
     def debug_setup(self,):
         # Debug Function 
-        self.dx = 0
-        self.dy = 0
-        self.dz = 0
-        self.accept("arrow_up", self.xp)
-        self.accept("arrow_up-repeat", self.xp)
-        self.accept("arrow_down", self.xn)
-        self.accept("arrow_down-repeat", self.xn)
-        self.accept("arrow_left", self.yp)
-        self.accept("arrow_left-repeat", self.yp)
-        self.accept("arrow_right", self.yn)
-        self.accept("arrow_right-repeat", self.yn)
+        self.accept("arrow_up", self.yn)
+        self.accept("arrow_up-repeat", self.yn)
+        self.accept("arrow_down", self.yp)
+        self.accept("arrow_down-repeat", self.yp)
+        self.accept("arrow_left", self.xp)
+        self.accept("arrow_left-repeat", self.xp)
+        self.accept("arrow_right", self.xn)
+        self.accept("arrow_right-repeat", self.xn)
         self.accept(".", self.zp)
         self.accept(".-repeat", self.zp)
         self.accept(",", self.zn)

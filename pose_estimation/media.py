@@ -46,16 +46,15 @@ class Pose():
             "LH": ("L_sho", "L_wri", "R_sho", "L_sho"),
             "RH": ("R_sho", "R_wri", "L_sho", "R_sho"),
             "LH_U": ("L_sho", "L_elb", "R_sho", "L_sho"),
-            "LH_D": ("L_elb", "L_wri", "R_sho", "L_sho"),
+            "LH_D": ("L_elb", "L_wri", "L_sho", "L_elb"),
             "RH_U": ("R_sho", "R_elb","L_sho", "R_sho"),
-            "RH_D": ("R_elb", "R_wri","L_sho", "R_sho"),
+            "RH_D": ("R_elb", "R_wri","R_sho", "R_elb"),
             # "NOR" : ("L_sho", "R_sho")
         }
         for key, (S, T, NS, NT) in joint_vec_dict.items():
             joint_info[key] = self.joint_to_vec(key,joint_info[S], joint_info[T], \
                 self.joint_to_vec("NOR",joint_info[NS], joint_info[NT])) 
 
-        logging.debug(joint_info["test"])
         
         # mp_drawing.plot_landmarks(results.pose_world_landmarks, mp_pose.POSE_CONNECTIONS) 
         # Draw the pose annotation on the image.
@@ -99,9 +98,7 @@ class Pose():
 
     def joint_to_vec(self,key, start, end, nor_vec = None) -> tuple:
         start = self.getxyz(start)
-        print(key,start)
         end = self.getxyz(end)
-        print(key,end)
         vec = tuple(map(lambda i, j: i - j, end, start))
         if not nor_vec is None:
             nor = self.get_len((nor_vec[0], nor_vec[2]))   
