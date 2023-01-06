@@ -1,11 +1,9 @@
-from mediapipe.framework.formats import landmark_pb2
+import os
 import cv2
-import mediapipe as mp
-import numpy as np
+import json
 import math
-import matplotlib.pyplot as plt
 import logging
-
+import mediapipe as mp
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
@@ -19,45 +17,29 @@ class Pose():
         self.cap = cv2.VideoCapture(0)
         self.pose = mp_pose.Pose(min_detection_confidence=0.5,
                                  min_tracking_confidence=0.5)   # work as image recognition processor
-        
-    def inference(self, show=False):
+        self.path = "./pose_estimation"
+        with open(os.path.join(self.path, "media_config.json"), "r") as read_config:
+            self.config = json.load(read_config)
+    def inference(self, CV2_Show = False, JointPos_Show = False, Loc_Print = False):
         _, image = self.cap.read()
         image.flags.writeable = False
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         results = self.pose.process(image)
         if results.pose_landmarks == None:
             return
-        if results.pose_landmarks:
-            PL = landmark_pb2.NormalizedLandmarkList(
-                landmark = [
-                    results.pose_landmarks.landmark[i] for i in range(0, 33)  # joint number(0:32)
-                ])
-            self.print_joint_pos(shows = False)
-            
-        joint_names = ["L_sho","R_sho","L_elb","R_elb","L_wri","R_wri"]
+        if Loc_Print:
+            self.print_joint_pos(results)
+        
+        # print(type(results.pose_world_landmarks.landmark[mp_pose.PoseLandmark(0).value])) 
+        
         joint_info = {
-            joint_name : results.pose_world_landmarks\
-                .landmark[mp_pose.PoseLandmark(idx).value] 
-                        for idx, joint_name in enumerate(joint_names, start=11)
+            joint_name : results.pose_world_landmarks.landmark[mp_pose.PoseLandmark(idx).value] 
+                        for idx, joint_name in enumerate(self.config["Joint_List"], start=0)
         } 
-        # nor_vec = self.joint_to_vec("NOR",joint_info["L_sho"], joint_info["R_sho"])
-
-        joint_vec_dict = {
-            "LH": ("L_sho", "L_wri", "R_sho", "L_sho"),
-            "RH": ("R_sho", "R_wri", "L_sho", "R_sho"),
-            "LH_U": ("L_sho", "L_elb", "R_sho", "L_sho"),
-            "LH_D": ("L_elb", "L_wri", "R_sho", "L_sho"),
-            "RH_U": ("R_sho", "R_elb","L_sho", "R_sho"),
-            "RH_D": ("R_elb", "R_wri","L_sho", "R_sho"),
-            # "NOR" : ("L_sho", "R_sho")
-        }
-        for key, (S, T, NS, NT) in joint_vec_dict.items():
+        for key, (S, T, NS, NT) in self.config["Joint_Vec"].items():
             joint_info[key] = self.joint_to_vec(key,joint_info[S], joint_info[T], \
                 self.joint_to_vec("NOR",joint_info[NS], joint_info[NT])) 
-
-        logging.debug(joint_info["test"])
-        
-        # mp_drawing.plot_landmarks(results.pose_world_landmarks, mp_pose.POSE_CONNECTIONS) 
+                    
         # Draw the pose annotation on the image.
         image.flags.writeable = True
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
@@ -67,21 +49,19 @@ class Pose():
             mp_pose.POSE_CONNECTIONS,
             landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style()
         )
-        
-        h, w, _ = image.shape
         image = cv2.flip(image, 1)
-        if show:
+
+        if JointPos_Show:
+            mp_drawing.plot_landmarks(results.pose_world_landmarks, mp_pose.POSE_CONNECTIONS) 
+        if CV2_Show:
             cv2.imshow('MediaPipe Pose', image)
-        
-        # return normalized joint position
+
         return joint_info
     
-    def draw_3d_landmarks(self):
-        return
-    def print_joint_pos(self, shows):
-        if shows is True:
-            for i in range(0,33):
-                print(f'{i},{mp_pose.PoseLandmark(i).name}:\n{results.pose_world_landmarks.landmark[mp_pose.PoseLandmark(i).value]}')   
+    def print_joint_pos(self, results):
+        for i in range(33):
+            print(f"{i},{mp_pose.PoseLandmark(i).name}:",
+            f"\n{results.pose_world_landmarks.landmark[mp_pose.PoseLandmark(i).value]}")   
         return
 
     def getxyz(self, point):
@@ -99,9 +79,7 @@ class Pose():
 
     def joint_to_vec(self,key, start, end, nor_vec = None) -> tuple:
         start = self.getxyz(start)
-        print(key,start)
         end = self.getxyz(end)
-        print(key,end)
         vec = tuple(map(lambda i, j: i - j, end, start))
         if not nor_vec is None:
             nor = self.get_len((nor_vec[0], nor_vec[2]))   
@@ -117,7 +95,7 @@ def main():
     pose = Pose()
         
     while True:
-        ret = pose.inference(show=True) #return joint_vec
+        ret = pose.inference(True, True, False) #return joint_vec
         if cv2.waitKey(1) & 0xFF == 27: # ESC=27
             break
     pose.__del__()
