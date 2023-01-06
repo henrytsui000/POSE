@@ -8,7 +8,7 @@ from .utils import *
 
 class CameraControl:
 
-    def __init__( self, node, mouse_watcher_node, speed=0.2 ):
+    def __init__( self, node, mouse_watcher_node, speed=2 ):
 
         self.node = node
 
@@ -35,11 +35,11 @@ class CameraControl:
 
         self.speed = speed
 
-        self.zoom = 10
+        self.zoom = 750
 
 
         self.heading = 0
-        self.pitch = -45
+        self.pitch = 0
 
         self.node.set_pos( 0, -self.zoom, 0 )
         self.pitch_node.set_hpr( 0, self.pitch, 0 )

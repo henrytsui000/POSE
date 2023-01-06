@@ -42,8 +42,6 @@ class controller():
             self.env.update_pos_target(self.human_pose)
             # self.env.move_target(self.human_pose)
             time.sleep(5e-2)
-        self.env.chg()
-        # self.env.run()
         
 
     def ppe(self, ):
