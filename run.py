@@ -15,7 +15,7 @@ class controller():
         logging.basicConfig(level=logging.INFO,
                             format='%(asctime)s %(filename)s %(levelname)-4s %(message)s',
                             datefmt='%m-%d %H:%M',)
-        self.env = Env("./src/")
+        self.env = Env("./src/", debug=False)
         self.pe = Pose()
         self.Plist = [
             Thread(target = self.penv, args = ()),
@@ -42,7 +42,7 @@ class controller():
             self.env.update_pos_target(self.human_pose)
             # self.env.move_target(self.human_pose)
             time.sleep(5e-2)
-        
+
 
     def ppe(self, ):
         """
