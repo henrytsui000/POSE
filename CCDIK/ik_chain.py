@@ -74,7 +74,6 @@ class IKChain():
     def update_ik( self, threshold = 1e-2, min_iterations=1, max_iterations=10 ):
 
         assert len(self.bones) > 0, "IKChain requires at least one bone for update_i_k() to work!"
-
         # Solve the IK chain for the IK nodes:
         if self.target:
             self.inverse_kinematics_cCD( threshold, min_iterations, max_iterations )

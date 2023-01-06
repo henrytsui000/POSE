@@ -51,14 +51,13 @@ class Pose():
             "LH_D": ("L_elb", "L_wri"),
             "RH_U": ("R_sho", "R_elb"),
             "RH_D": ("R_elb", "R_wri"),
-            "test" : ("L_sho", "R_sho")
+            "Base" : ("L_sho", "R_sho")
         }
         for key, (S, T) in joint_vec_dict.items():
             joint_info[key] = self.joint_to_vec(joint_info[S], joint_info[T], nor_vec) 
 
-        logging.debug(joint_info["test"])
         
-        mp_drawing.plot_landmarks(results.pose_world_landmarks, mp_pose.POSE_CONNECTIONS) 
+        # mp_drawing.plot_landmarks(results.pose_world_landmarks, mp_pose.POSE_CONNECTIONS) 
         # Draw the pose annotation on the image.
         image.flags.writeable = True
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
