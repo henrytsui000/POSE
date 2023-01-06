@@ -49,10 +49,17 @@ class Env(ShowBase):
         joint_names = [ "upperarm_l", "lowerarm_l", "hand_l"]
                         
         self.ik_chain = self.ik_actor.create_ik_chain( joint_names )
-        # for name in joint_names:
-        #     self.ik_chain.set_hinge_constraint( name, LVector3f.unit_x(),
-        #             min_ang=-math.pi*0.6, max_ang=math.pi*0.6 )
-        self.ik_chain.debug_display( line_length=0.5 )   
+        # Can't raise hand version
+        self.ik_chain.set_hinge_constraint( "upperarm_l", LVector3f(0,-0.5,1),
+                min_ang=-(math.pi * 0.85), max_ang=0 )
+        self.ik_chain.set_hinge_constraint( "lowerarm_l", LVector3f(1,1,0),
+                min_ang=-(math.pi * 0.1), max_ang=(math.pi * 0.25) )
+        # # Some weird pose version
+        # self.ik_chain.set_hinge_constraint( "upperarm_l", LVector3f(0,-0.5,1),
+        #         min_ang=-(math.pi * 0.85), max_ang=0 )
+        # self.ik_chain.set_hinge_constraint( "lowerarm_l", LVector3f(0,1,1),
+        #         min_ang=-(math.pi * 0.45), max_ang=(math.pi * 0.35) )
+        # self.ik_chain.debug_display( line_length=0.5 )   
         self.ik_actor.actor.ls()
         print(self.ik_actor.actor.exposeJoint(None, "modelRoot", "upperarm_r").getPos())
         print(self.ik_actor.actor.exposeJoint(None, "modelRoot", "upperarm_l").getPos())
@@ -103,7 +110,7 @@ class Env(ShowBase):
         self.ik_chain.update_ik()
         return Task.cont
     
-    def vec_to_world(self, vec, start, ):
+    # def vec_to_world(self, vec, start, ):
         
     
     def nor2real(self, normal):
