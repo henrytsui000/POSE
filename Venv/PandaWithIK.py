@@ -34,10 +34,15 @@ class Env(ShowBase):
         
         logging.info("Setup IK chain")
         
-        self.target_list = ["LH"]
-        # , "RH", "LF", "RF"]
+        self.target_list = ["LH", "RH"]
+        # , "LF", "RF"]
+        self.base_dict = {
+            "RH" : ("upperarm_r", "upperarm_l"),
+            "LH" : ("upperarm_l", "upperarm_r"),
+        }
         
-        self.chain_list_dict = {"LH" : ["upperarm_l", "lowerarm_l", "hand_l"]}
+        self.chain_list_dict = {"LH" : ["upperarm_l", "lowerarm_l", "hand_l"],
+                                "RH" : ["upperarm_r", "lowerarm_r", "hand_r"]}
         self.ik_chain = dict()
         self.ik_target = dict()
         tar = dict()
@@ -84,7 +89,7 @@ class Env(ShowBase):
         if not "LH" in self.joint_target:
             return Task.cont
         for target in self.target_list:
-            joint_tar = self.nor2real(self.joint_target[target], )
+            joint_tar = self.nor2real(self.joint_target[target], target)
             self.ik_target[target].setPos(joint_tar)
             self.ik_chain[target].update_ik()
         return Task.cont
@@ -96,7 +101,7 @@ class Env(ShowBase):
         px, py, _ = vec
         qx = px * math.cos(angle) - py * math.sin(angle)
         qy = px * math.sin(angle) + py * math.cos(angle)
-        return -qx, -qy
+        return qx, -qy
     
     def vec_to_world(self, vec, bas, ref):
         thetab = math.atan2(bas[1], bas[0])
@@ -107,11 +112,12 @@ class Env(ShowBase):
         tar = LVector3f(x, y, z) + ref
         return tar
     
-    def nor2real(self, normal):
-        UAR = self.ik_actor.actor.exposeJoint(None, "modelRoot", "upperarm_r").getPos()
-        UAL = self.ik_actor.actor.exposeJoint(None, "modelRoot", "upperarm_l").getPos()
-        bas = UAL - UAR
-        ret = self.vec_to_world(normal, bas, UAL)
+    def nor2real(self, normal, target):
+        S, T = self.base_dict[target]
+        S = self.ik_actor.actor.exposeJoint(None, "modelRoot", S).getPos()
+        T = self.ik_actor.actor.exposeJoint(None, "modelRoot", T).getPos()
+        bas = S - T
+        ret = self.vec_to_world(normal, bas, S)
         return ret
     
     def debug_setup(self,):
