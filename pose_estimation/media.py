@@ -52,6 +52,7 @@ class Pose():
         image = cv2.flip(image, 1)
 
         if JointPos_Show:
+            # changes drawing_utils
             img = mp_drawing.plot_landmarks(results.pose_world_landmarks, mp_pose.POSE_CONNECTIONS)
             imgS = cv2.resize(img, (image.shape[1], image.shape[0]))
             imgS = cv2.flip(imgS, 1)
@@ -105,5 +106,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
