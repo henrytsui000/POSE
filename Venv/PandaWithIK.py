@@ -26,6 +26,7 @@ class Env(ShowBase):
         self.DebugMode = debug
         
         logging.info("Loading model")
+        self.running = True
         self.path = src + model
         self.model = Actor(os.path.join(self.path, "model.fbx"))
         self.root = render.attach_new_node("Root")
@@ -89,15 +90,24 @@ class Env(ShowBase):
             self.debug_setup()
         logging.info("Finish Panda all Setup Process")
         
+        # self.ik_actor.actor.ls()  
+        # print(self.ik_actor.actor.exposeJoint(None, "modelRoot", "upperarm_r").getPos(render))
+        # self.ik_actor.actor.controlJoint(None, "modelRoot", "spine_02").setHpr(0, 90, 0)
+        # self.ik_actor.reparent_to(self.root)
+        # print(self.ik_actor.actor.exposeJoint(None, "modelRoot", "upperarm_r").getPos(render))
+    
     def camera_setup(self, ):        
         self.set_frame_rate_meter(True)
-        self.accept('escape', sys.exit)
+        self.accept('escape', self.close_panda)
         self.disableMouse()
         self.cam_control = CameraControl(camera, self.mouseWatcherNode)
         self.taskMgr.add( self.cam_control.move_camera, "MoveCameraTask")
         self.accept( "wheel_down", self.cam_control.wheel_down )
         self.accept( "wheel_up", self.cam_control.wheel_up )
         
+    def close_panda(self):
+        self.running = False
+        sys.exit()
 
     def update_pos_target(self, update_dict):
         if update_dict is not None:
@@ -110,6 +120,8 @@ class Env(ShowBase):
             joint_tar = (self.dx, self.dy, self.dz)
             if not self.DebugMode and target in self.joint_target:
                 joint_tar = self.nor2real(self.joint_target[target], target)
+            # print(joint_tar)
+            # print(joint_tar)
             self.ik_target[target].setPos(joint_tar)
             self.ik_chain[target].update_ik()
         return Task.cont
@@ -121,13 +133,13 @@ class Env(ShowBase):
         px, py, _ = vec
         qx = px * math.cos(angle) - py * math.sin(angle)
         qy = px * math.sin(angle) + py * math.cos(angle)
-        return qx, -qy
+        return qx, qy
     
     def vec_to_world(self, vec, bas, ref, Con = 1):
         thetab = math.atan2(bas[1], bas[0])
         x, y = self.rotate(vec, thetab)
         x *= Con * self.get_len(bas)
-        y *= Con * self.get_len(bas)
+        y *= -Con * self.get_len(bas)
         z = vec[-1] * self.get_len(bas)
         tar = LVector3f(x, y, z) + ref
         return tar
@@ -139,6 +151,9 @@ class Env(ShowBase):
         R = self.ik_actor.actor.exposeJoint(None, "modelRoot", R).getPos()
         bas = S - T
         ret = self.vec_to_world(normal, bas, S, Con)
+        # if "H_U" in target:        
+        #     print(target)
+        #     ret = LVector3f(self.rotate(ret, math.pi/2), ret[2])
         return ret
     
     def debug_setup(self,):
@@ -163,9 +178,6 @@ class Env(ShowBase):
     def yn(self, ): self.dy -= 10
     def zp(self, ): self.dz += 10
     def zn(self, ): self.dz -= 10
-
-    
-
     
 def main():
     env = Env()

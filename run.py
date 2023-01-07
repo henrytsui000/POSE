@@ -38,10 +38,10 @@ class controller():
         This is the function which maintain the panda3d environemt        
         """
         logging.info("Start running ENV")
-        while True:
+        while self.env.running:
             self.env.update_pos_target(self.human_pose)
-            # self.env.move_target(self.human_pose)
             time.sleep(5e-2)
+        logging.info("Stop running, Closing all process...")
 
 
     def ppe(self, ):
