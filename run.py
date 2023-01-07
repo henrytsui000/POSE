@@ -52,7 +52,7 @@ class controller():
         """
         logging.info("Start running PE")
         while True:
-            self.human_pose = self.pe.inference(show=True)
+            self.human_pose = self.pe.inference(True, False, False)
             if cv2.waitKey(5) & 0xFF == 27:
                 break
 

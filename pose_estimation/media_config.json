@@ -62,8 +62,8 @@
         "LH_D": [
             "L_elb",
             "L_wri",
-            "L_sho",
-            "L_elb"
+            "R_sho",
+            "L_sho"
         ],
         "RH_U": [
             "R_sho",
@@ -74,8 +74,8 @@
         "RH_D": [
             "R_elb",
             "R_wri",
-            "R_sho",
-            "R_elb"
+            "L_sho",
+            "R_sho"
         ],
         "HIP": [
             "L_hip",
@@ -104,8 +104,8 @@
         "LF_D": [
             "L_knee",
             "L_ank",
-            "L_hip",
-            "L_knee"
+            "R_hip",
+            "L_hip"
         ],
         "RF_U": [
             "R_hip",
@@ -116,8 +116,8 @@
         "RF_D": [
             "R_hip",
             "R_ank",
-            "R_hip",
-            "R_knee"
+            "L_hip",
+            "R_hip"
         ]
     }
 }
