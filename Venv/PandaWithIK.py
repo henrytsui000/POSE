@@ -4,6 +4,7 @@ from direct.task import Task
 from direct.gui.OnscreenImage import OnscreenImage
 import sys
 
+sys.path.append("./")
 from CCDIK.ik_chain import IKChain
 from CCDIK.ik_actor import IKActor
 from CCDIK.utils import *

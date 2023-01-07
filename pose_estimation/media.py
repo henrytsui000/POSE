@@ -4,8 +4,12 @@ import json
 import math
 import logging
 import mediapipe as mp
+import sys
+sys.path.append("./Tools/")
+import our_draw
 
 mp_drawing = mp.solutions.drawing_utils
+mp_drawing = our_draw
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_pose = mp.solutions.pose
 
@@ -97,7 +101,6 @@ class Pose():
 
 def main():
     pose = Pose()
-        
     while True:
         ret = pose.inference(True, True, False) #return joint_vec
         if cv2.waitKey(1) & 0xFF == 27: # ESC=27
