@@ -16,7 +16,7 @@ class CameraControl:
         self.pitch_node = self.heading_node.attach_new_node( "Camera_pitch_rot_node" )
         self.node.reparent_to( self.pitch_node )
 
-        self.heading_node.set_pos( 0, 0, 0.5 )
+        self.heading_node.set_pos( 0, 0, 100 )
 
         #self.focus_node = render.attach_new_node("Camera_focus_node")
         self.attached = False
@@ -35,11 +35,11 @@ class CameraControl:
 
         self.speed = speed
 
-        self.zoom = 750
+        self.zoom = 500
 
 
-        self.heading = 0
-        self.pitch = 0
+        self.heading = 135
+        self.pitch = -30
 
         self.node.set_pos( 0, -self.zoom, 0 )
         self.pitch_node.set_hpr( 0, self.pitch, 0 )
