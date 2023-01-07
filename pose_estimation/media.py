@@ -26,6 +26,8 @@ class Pose():
             self.config = json.load(read_config)
     def inference(self, CV2_Show = False, JointPos_Show = False, Loc_Print = False):
         _, image = self.cap.read()
+        if image is None:
+            return
         image.flags.writeable = False
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         results = self.pose.process(image)
@@ -41,9 +43,9 @@ class Pose():
                         for idx, joint_name in enumerate(self.config["Joint_List"], start=0)
         } 
         for key, (S, T, NS, NT) in self.config["Joint_Vec"].items():
-            joint_info[key] = self.joint_to_vec(key,joint_info[S], joint_info[T], \
+             joint_info[key] = self.joint_to_vec(key,joint_info[S], joint_info[T], \
                 self.joint_to_vec("NOR",joint_info[NS], joint_info[NT])) 
-                    
+                        
         # Draw the pose annotation on the image.
         image.flags.writeable = True
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
@@ -83,9 +85,22 @@ class Pose():
         qx = px * math.cos(theta)-py * math.sin(theta)
         qy = px * math.sin(theta)+py * math.cos(theta)
         return qx, qy, z
+    
+    def innerproduct(self ,vec1_s ,vec1_e ,vec2_s ,vec2_e):
+        vec1_s = self.getxyz(vec1_s)
+        vec1_e = self.getxyz(vec1_e)
+        vec2_s = self.getxyz(vec2_s)
+        vec2_e = self.getxyz(vec2_e)
+        vec1 = tuple(map(lambda i, j: i - j, vec1_e, vec1_s))
+        vec2 = tuple(map(lambda i, j: i - j, vec2_e, vec2_s))
+        len_p = self.get_len(vec1) * self.get_len(vec2)
+        in_p =  vec1[0]*vec2[0] + vec1[1]*vec2[1]
+        cos_theta = in_p / len_p
+
+        return vec1 ,vec2 ,math.acos(cos_theta)
 
 
-    def joint_to_vec(self,key, start, end, nor_vec = None) -> tuple:
+    def joint_to_vec(self, start, end, nor_vec = None) -> tuple:
         start = self.getxyz(start)
         end = self.getxyz(end)
         vec = tuple(map(lambda i, j: i - j, end, start))
