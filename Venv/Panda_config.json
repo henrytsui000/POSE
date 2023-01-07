@@ -38,7 +38,7 @@
             "thigh_l",
             "thigh_r",
             "thigh_l",
-            1
+            0.8
         ],
         "LF_D": [
             "calf_l",
@@ -50,7 +50,7 @@
             "thigh_r",
             "thigh_l",
             "thigh_r",
-            1
+            0.8
         ],
         "RF_D": [
             "calf_r",
