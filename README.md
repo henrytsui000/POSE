@@ -17,8 +17,6 @@
 $conda create -n POSE python=3.8
 $conda activate POSE
 $pip install -r requirements.txt
-# If you aren't M1 user, use this:
-# $pip install mediapipe
 # If you are M1 user, use this:
 # $pip install mediapipe-silicon
 
@@ -59,8 +57,34 @@ $python Venv/PandaWithIK.py
 
 # Methods
 ## 3D Pose Estimaiton
-
+### Get joint position and show landmark results
+By MediaPipe, we can get a Pose Estimation results of 33 joints in our body, and therefore exhibit in a 3D coordinate.
+You can rotate the 3D landmark location in the coordinate to see different perspectives.
+|Front View|Side View|Top View|
+|--|--|--|
+|![image](./src/image/front.png)|![image](./src/image/side.png)|![image](./src/image/opposite.png)|
 ## 3D Virtual Engine
-# Future Work
+We use Panda3D as 3D Virtual Engine, since its programs can be written in python (avoid using C#), plus, it is also lightweight and can be used on different OS. But the cons is it has no GUI and not all models can be loaded.
 
+## Coordinate conversion between Pose Estimation and Panda3D
+1. Define a “Base” vector and normalize to length = 1
+    - Left upper body : Right shoulder → Left shoulder
+    - Right lower body :  Left hip → Right hip
+2. Find the angle between the base vector and the x-axis
+3. Normalize the joint vector of each body part according to the base vector and rotate the angle
+
+![image](./src/image/math.png)
+
+## Inverse Kinematics (IK) used in Panda3D
+3D model joints that directly control panda3d are complicated.
+- Coordinate axis transformation
+- Dependencies between joints
+
+With IK, the angle of the joint can be found by the end effector.
+Packaged into functions and No need to rewrite in other joints.
+
+# Future Work
+- Increased accuracy and reduced latency.
+- Add some art to the environment.
+- Ability to interact with other virtual users or AI avatars.
 # Citation
