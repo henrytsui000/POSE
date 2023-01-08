@@ -1,7 +1,6 @@
 from direct.showbase.ShowBase import ShowBase
 from direct.actor.Actor import Actor
 from direct.task import Task
-from direct.gui.OnscreenImage import OnscreenImage
 import sys
 
 sys.path.append("./")
@@ -10,13 +9,10 @@ from CCDIK.ik_actor import IKActor
 from CCDIK.utils import *
 from CCDIK.camera_control import CameraControl
 
-from direct.showbase.Loader import Loader
-
-import json
 import os 
 import sys
+import json
 import logging
-import copy
 
 class Env(ShowBase):
     def __init__(self, src="../src/", model = "waiter", debug = True):
@@ -36,8 +32,6 @@ class Env(ShowBase):
         logging.info("Success loading model")
 
         logging.info("Setup IK chain")
-        
-        # self.ik_actor.actor.ls()
         
         logging.info("Loading Config")
         self.path = "./Venv"
@@ -90,13 +84,9 @@ class Env(ShowBase):
         self.dx, self.dy, self.dz = 0, 0, 0
         if self.DebugMode:
             self.debug_setup()
+            self.ik_actor.actor.ls()
         logging.info("Finish Panda all Setup Process")
         
-        # self.ik_actor.actor.ls()  
-        # print(self.ik_actor.actor.exposeJoint(None, "modelRoot", "upperarm_r").getPos(render))
-        # self.ik_actor.actor.controlJoint(None, "modelRoot", "neck_01").setHpr(0, 90, 0)
-        # self.ik_actor.reparent_to(self.root)
-        # print(self.ik_actor.actor.exposeJoint(None, "modelRoot", "upperarm_r").getPos(render))
     
     def camera_setup(self, ):        
         self.set_frame_rate_meter(True)
@@ -131,8 +121,6 @@ class Env(ShowBase):
             joint_tar = (self.dx, self.dy, self.dz)
             if not self.DebugMode and target in self.joint_target:
                 joint_tar = self.nor2real(self.joint_target[target], target)
-            # print(joint_tar)
-            # print(joint_tar)
             self.ik_target[target].setPos(joint_tar)
             self.ik_chain[target].update_ik()
         return Task.cont
@@ -162,9 +150,6 @@ class Env(ShowBase):
         R = self.ik_actor.actor.exposeJoint(None, "modelRoot", R).getPos()
         bas = S - T
         ret = self.vec_to_world(normal, bas, S, Con)
-        # if "H_U" in target:        
-        #     print(target)
-        #     ret = LVector3f(self.rotate(ret, math.pi/2), ret[2])
         return ret
     
     def debug_setup(self,):
