@@ -62,4 +62,8 @@ $python Venv/PandaWithIK.py
 ## 3D Virtual Engine
 # Future Work
 
-# Citation
+# Citation / License
+
+Thanks to Mediapipe and panda3D developers for providing us with a good development environment, so that we can stand on the shoulders of giants and make a project that satisfies us. At the same time, I would like to thank the netizens in the panda3d community for their enthusiastic responses to questions on the 3D model and GitHub for providing the basis for inverse kinematics.
+
+The LICENSE of this github code is Apache 2.0 license, all developers are welcome to use or test our project, or provide valuable comments.
