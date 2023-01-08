@@ -1,18 +1,18 @@
 # POSE
-The purpose of our project is image recognition with AI to make virtual avatars with synchronized actions and interact with the environment. Also, we develop a platform that can control virtual avatars through image recognition to replace joysticks and reduce costs.
 
-By using only the camera to achieve pose inspection, the overall environment can be easily reproduced.
-In the future, we hope to deploy the system to various private devices through the server to achieve the goal of user interaction. The target device will be any platform capable of computing, such as windows, ubuntu, M1 mac, jetson nano, etc.
+# Project Demo
 
 # Contents
+
 - [POSE](#pose)
 - [Contents](#contents)
 - [Build Environment](#build-environment)
 - [Overview](#overview)
 - [CheckList](#checklist)
 - [Citation](#citation)
- 
+
 # Build Environment
+
 ```bash
 $conda create -n POSE python=3.8
 $conda activate POSE
@@ -24,10 +24,43 @@ $pip install -r requirements.txt
 
 ```
 
-# Overview
+# Let's Start!
 
-# CheckList
+## How to run our project :
+
+```bash
+$python run.py
+```
+
+## If you only want to check out the results of Pose Estimation, run :
+
+```bash
+$python pose_estimation/media.py
+```
+
+## If you only want to check out the results of panda3D engine, run :
+
+```bash
+$python Venv/PandaWithIK.py
+```
+
+# Project Architecture
+
+![image](./src/image/arc.png)
+
+- Capture the action of real people through the webcam.
+- Use pose estimation to capture location of the joints.
+- Using 3D engine as a platform, and built a virtual reality.
+
+# Project Platform
+- We use  RTX3090 and Ub2 22.04 to develop.
+- Can be deploy on Mac M1, Win11, Jatson Nano...
+- Need a webcam to capture images. (Ours: Logitech C615 HD)
+
+# Methods
+## 3D Pose Estimaiton
+
+## 3D Virtual Engine
+# Future Work
 
 # Citation
-
-
