@@ -24,6 +24,19 @@ class Pose():
         self.path = "./pose_estimation"
         with open(os.path.join(self.path, "media_config.json"), "r") as read_config:
             self.config = json.load(read_config)
+        self.counter = 0    
+    
+    def im_show(self, cv2_img = None, mat_img = None):
+        img = None
+        if not (cv2_img is None or mat_img is None):
+            img = cv2.vconcat([cv2_img, mat_img])
+        elif not cv2_img is None:
+            img = cv2_img
+        elif not mat_img is None:
+            img = mat_img
+        if not img.all():
+            cv2.imshow("Inference Result", img)
+    
     def inference(self, CV2_Show = False, JointPos_Show = False, Loc_Print = False):
         _, image = self.cap.read()
         if image is None:
@@ -31,7 +44,10 @@ class Pose():
         image.flags.writeable = False
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         results = self.pose.process(image)
-        if results.pose_landmarks == None:
+        if results.pose_landmarks == None:        
+            image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+            image = cv2.flip(image, 1)
+            self.im_show(image, None)
             return
         if Loc_Print:
             self.print_joint_pos(results)
@@ -43,8 +59,8 @@ class Pose():
                         for idx, joint_name in enumerate(self.config["Joint_List"], start=0)
         } 
         for key, (S, T, NS, NT) in self.config["Joint_Vec"].items():
-             joint_info[key] = self.joint_to_vec(key,joint_info[S], joint_info[T], \
-                self.joint_to_vec("NOR",joint_info[NS], joint_info[NT])) 
+             joint_info[key] = self.joint_to_vec(joint_info[S], joint_info[T], \
+                self.joint_to_vec(joint_info[NS], joint_info[NT])) 
                         
         # Draw the pose annotation on the image.
         image.flags.writeable = True
@@ -57,15 +73,17 @@ class Pose():
         )
         image = cv2.flip(image, 1)
 
+        imgS = None
         if JointPos_Show:
             # changes drawing_utils
-            img = mp_drawing.plot_landmarks(results.pose_world_landmarks, mp_pose.POSE_CONNECTIONS)
-            imgS = cv2.resize(img, (image.shape[1], image.shape[0]))
-            imgS = cv2.flip(imgS, 1)
-            cv2.imshow('Joints Position', imgS)
-        if CV2_Show:
-            cv2.imshow('MediaPipe Pose', image)
-
+            if self.counter == 0: 
+                img = mp_drawing.plot_landmarks(results.pose_world_landmarks, mp_pose.POSE_CONNECTIONS)
+                imgS = cv2.resize(img, (image.shape[1], image.shape[0]))
+                self.imgS = cv2.flip(imgS, 1)
+            else: imgS = self.imgS
+            imgS = cv2.cvtColor(self.imgS, cv2.COLOR_RGBA2BGR)
+            self.counter = (self.counter + 1) % 5
+        self.im_show(image if CV2_Show else None, imgS if JointPos_Show else None)
         return joint_info
     
     def print_joint_pos(self, results):
