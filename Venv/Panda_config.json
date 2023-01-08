@@ -38,25 +38,25 @@
             "thigh_l",
             "thigh_r",
             "thigh_l",
-            0.8
+            0.6
         ],
         "LF_D": [
             "calf_l",
             "thigh_l",
             "thigh_l",
-            1
+            0.6
         ],
         "RF_U": [
             "thigh_r",
             "thigh_l",
             "thigh_r",
-            0.8
+            0.6
         ],
         "RF_D": [
             "calf_r",
             "thigh_r",
             "thigh_r",
-            1
+            0.6
         ]
     },
     "chain_list_dict": {

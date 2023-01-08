@@ -82,7 +82,7 @@ class Pose():
                 self.imgS = cv2.flip(imgS, 1)
             else: imgS = self.imgS
             imgS = cv2.cvtColor(self.imgS, cv2.COLOR_RGBA2BGR)
-            self.counter = (self.counter + 1) % 5
+            self.counter = (self.counter + 1) % 10
         self.im_show(image if CV2_Show else None, imgS if JointPos_Show else None)
         return joint_info
     

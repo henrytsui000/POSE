@@ -21,7 +21,6 @@ $pip install -r requirements.txt
 # $pip install mediapipe
 # If you are M1 user, use this:
 # $pip install mediapipe-silicon
-
 ```
 
 # Overview

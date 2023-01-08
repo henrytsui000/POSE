@@ -81,6 +81,7 @@ class Env(ShowBase):
         logging.info("Finish setup IK chain")
 
         self.task_mgr.add( self.move_target, "MoveTarget")
+        self.task_mgr.add( self.head_rotate, "HeadRotate")
         self.joint_target = dict()      
 
         logging.info("Setup camera")
@@ -93,7 +94,7 @@ class Env(ShowBase):
         
         # self.ik_actor.actor.ls()  
         # print(self.ik_actor.actor.exposeJoint(None, "modelRoot", "upperarm_r").getPos(render))
-        # self.ik_actor.actor.controlJoint(None, "modelRoot", "spine_02").setHpr(0, 90, 0)
+        # self.ik_actor.actor.controlJoint(None, "modelRoot", "neck_01").setHpr(0, 90, 0)
         # self.ik_actor.reparent_to(self.root)
         # print(self.ik_actor.actor.exposeJoint(None, "modelRoot", "upperarm_r").getPos(render))
     
@@ -114,6 +115,15 @@ class Env(ShowBase):
         if update_dict is not None:
             for joint_name, pos in update_dict.items():
                 self.joint_target[joint_name] = pos
+        return Task.cont
+    
+    def head_rotate(self, task):
+        if "HEAD" in self.joint_target:
+            degree = self.joint_target["HEAD"]
+            x, y, z = self.joint_target["HEAD"]
+            degree = math.atan2(y, x)
+            logging.debug(degree)
+            self.ik_actor.actor.controlJoint(None, "modelRoot", "neck_01").setHpr(0, -2*math.degrees(degree), 0)
         return Task.cont
     
     def move_target(self, task):
