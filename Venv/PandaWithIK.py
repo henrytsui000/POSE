@@ -86,8 +86,7 @@ class Env(ShowBase):
             self.debug_setup()
             self.ik_actor.actor.ls()
         logging.info("Finish Panda all Setup Process")
-        
-    
+           
     def camera_setup(self, ):        
         self.set_frame_rate_meter(True)
         self.accept('escape', self.close_panda)
