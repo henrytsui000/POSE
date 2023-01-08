@@ -118,6 +118,12 @@
             "R_ank",
             "L_hip",
             "R_hip"
+        ],
+        "HEAD": [
+            "L_mouth",
+            "R_mouth",
+            "L_sho",
+            "R_sho"
         ]
     }
 }

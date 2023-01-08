@@ -1,21 +1,18 @@
 from direct.showbase.ShowBase import ShowBase
 from direct.actor.Actor import Actor
 from direct.task import Task
-from direct.gui.OnscreenImage import OnscreenImage
 import sys
 
+sys.path.append("./")
 from CCDIK.ik_chain import IKChain
 from CCDIK.ik_actor import IKActor
 from CCDIK.utils import *
 from CCDIK.camera_control import CameraControl
 
-from direct.showbase.Loader import Loader
-
-import json
 import os 
 import sys
+import json
 import logging
-import copy
 
 class Env(ShowBase):
     def __init__(self, src="../src/", model = "waiter", debug = True):
@@ -26,35 +23,24 @@ class Env(ShowBase):
         self.DebugMode = debug
         
         logging.info("Loading model")
+        self.running = True
         self.path = src + model
         self.model = Actor(os.path.join(self.path, "model.fbx"))
         self.root = render.attach_new_node("Root")
         self.ik_actor = IKActor( self.model, os.path.join(self.path, "texture.jpg"))
         self.ik_actor.reparent_to(self.root)
-        
+        logging.info("Success loading model")
+
         logging.info("Setup IK chain")
         
-        self.target_list = ["LH_D", "RH_D", "LH_U", "RH_U"]
-        # , "LF", "RF"]
-        self.base_dict = {
-            "LH_U" : ("upperarm_l", "upperarm_r"),
-            "LH_D" : ("lowerarm_l", "upperarm_l"),
-            "RH_U" : ("upperarm_r", "upperarm_l"),
-            "RH_D" : ("lowerarm_r", "upperarm_r"),
-        }
-        self.chain_list_dict = {
-            "LH_U" : ["upperarm_l", "lowerarm_l"],
-            "LH_D" : ["lowerarm_l", "hand_l"],
-            "RH_U" : ["upperarm_r", "lowerarm_r"],
-            "RH_D" : ["lowerarm_r", "hand_r"],
-        }
-        
-        self.joint_constrain = {
-            "upperarm_l" : ("ball",  ("A" , (-1, 1))),
-            "lowerarm_l" : ("ball", ("y" , (-1, 1))),
-            "upperarm_r" : ("ball",  ("A" , (-1, 1))),
-            "lowerarm_r" : ("ball", ("y" , (-1, 1))),
-        }
+        logging.info("Loading Config")
+        self.path = "./Venv"
+        with open(os.path.join(self.path, "Panda_config.json"), "r") as read_config:
+            config = json.load(read_config)
+        self.target_list = config["target_list"]
+        self.base_dict = config["base_dict"]
+        self.chain_list_dict = config["chain_list_dict"]
+        self.joint_constrain = config["joint_constrain"]
         
         dir_map = {
             "x" : LVector3f.unit_x(),
@@ -86,8 +72,10 @@ class Env(ShowBase):
                         self.ik_chain[target].set_static(name)
                         
             self.ik_chain[target].set_target(self.ik_target[target])
-            
+        logging.info("Finish setup IK chain")
+
         self.task_mgr.add( self.move_target, "MoveTarget")
+        self.task_mgr.add( self.head_rotate, "HeadRotate")
         self.joint_target = dict()      
 
         logging.info("Setup camera")
@@ -96,21 +84,35 @@ class Env(ShowBase):
         self.dx, self.dy, self.dz = 0, 0, 0
         if self.DebugMode:
             self.debug_setup()
-        
+            self.ik_actor.actor.ls()
+        logging.info("Finish Panda all Setup Process")
+           
     def camera_setup(self, ):        
         self.set_frame_rate_meter(True)
-        self.accept('escape', sys.exit)
+        self.accept('escape', self.close_panda)
         self.disableMouse()
         self.cam_control = CameraControl(camera, self.mouseWatcherNode)
         self.taskMgr.add( self.cam_control.move_camera, "MoveCameraTask")
         self.accept( "wheel_down", self.cam_control.wheel_down )
         self.accept( "wheel_up", self.cam_control.wheel_up )
         
+    def close_panda(self):
+        self.running = False
+        sys.exit()
 
     def update_pos_target(self, update_dict):
         if update_dict is not None:
             for joint_name, pos in update_dict.items():
                 self.joint_target[joint_name] = pos
+        return Task.cont
+    
+    def head_rotate(self, task):
+        if "HEAD" in self.joint_target:
+            degree = self.joint_target["HEAD"]
+            x, y, z = self.joint_target["HEAD"]
+            degree = math.atan2(y, x)
+            logging.debug(degree)
+            self.ik_actor.actor.controlJoint(None, "modelRoot", "neck_01").setHpr(0, -2*math.degrees(degree), 0)
         return Task.cont
     
     def move_target(self, task):
@@ -129,23 +131,24 @@ class Env(ShowBase):
         px, py, _ = vec
         qx = px * math.cos(angle) - py * math.sin(angle)
         qy = px * math.sin(angle) + py * math.cos(angle)
-        return qx, -qy
+        return qx, qy
     
-    def vec_to_world(self, vec, bas, ref):
+    def vec_to_world(self, vec, bas, ref, Con = 1):
         thetab = math.atan2(bas[1], bas[0])
         x, y = self.rotate(vec, thetab)
-        x *= 1.5 * self.get_len(bas)
-        y *= 1.5 * self.get_len(bas)
+        x *= Con * self.get_len(bas)
+        y *= -Con * self.get_len(bas)
         z = vec[-1] * self.get_len(bas)
         tar = LVector3f(x, y, z) + ref
         return tar
     
     def nor2real(self, normal, target):
-        S, T = self.base_dict[target]
+        S, T, R, Con = self.base_dict[target]
         S = self.ik_actor.actor.exposeJoint(None, "modelRoot", S).getPos()
         T = self.ik_actor.actor.exposeJoint(None, "modelRoot", T).getPos()
+        R = self.ik_actor.actor.exposeJoint(None, "modelRoot", R).getPos()
         bas = S - T
-        ret = self.vec_to_world(normal, bas, S)
+        ret = self.vec_to_world(normal, bas, S, Con)
         return ret
     
     def debug_setup(self,):
@@ -170,9 +173,6 @@ class Env(ShowBase):
     def yn(self, ): self.dy -= 10
     def zp(self, ): self.dz += 10
     def zn(self, ): self.dz -= 10
-
-    
-
     
 def main():
     env = Env()

@@ -19,7 +19,6 @@ $conda activate POSE
 $pip install -r requirements.txt
 # If you are M1 user, use this:
 # $pip install mediapipe-silicon
-
 ```
 
 # Let's Start!
@@ -87,4 +86,9 @@ Packaged into functions and No need to rewrite in other joints.
 - Increased accuracy and reduced latency.
 - Add some art to the environment.
 - Ability to interact with other virtual users or AI avatars.
-# Citation
+
+# Citation / License
+
+Thanks to Mediapipe and panda3D developers for providing us with a good development environment, so that we can stand on the shoulders of giants and make a project that satisfies us. At the same time, I would like to thank the netizens in the panda3d community for their enthusiastic responses to questions on the 3D model and GitHub for providing the basis for inverse kinematics.
+
+The LICENSE of this github code is Apache 2.0 license, all developers are welcome to use or test our project, or provide valuable comments.

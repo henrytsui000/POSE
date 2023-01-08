@@ -38,10 +38,10 @@ class controller():
         This is the function which maintain the panda3d environemt        
         """
         logging.info("Start running ENV")
-        while True:
+        while self.env.running:
             self.env.update_pos_target(self.human_pose)
-            # self.env.move_target(self.human_pose)
             time.sleep(5e-2)
+        logging.info("Stop running, Closing all process...")
 
 
     def ppe(self, ):
@@ -51,10 +51,11 @@ class controller():
         you don't need give parameters, after run __init__ all the parameters would save in self        
         """
         logging.info("Start running PE")
-        while True:
-            self.human_pose = self.pe.inference(True, False, False)
+        while self.env.running:
+            self.human_pose = self.pe.inference(True, True, False)
             if cv2.waitKey(5) & 0xFF == 27:
                 break
+        cv2.destroyAllWindows()
 
 def main():
     env = controller()
