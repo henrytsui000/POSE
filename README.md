@@ -9,11 +9,15 @@
 ## Contents
 
 - [POSE](#pose)
+- [Project Demo](#project-demo)
 - [Contents](#contents)
 - [Build Environment](#build-environment)
-- [Overview](#overview)
-- [CheckList](#checklist)
-- [Citation](#citation)
+- [Let's Start!](#lets-start)
+- [Project Architecture](#project-architecture)
+- [Project Platform](#project-platform)
+- [Methods](#methods)
+- [Future Work](#future-work)
+- [Citation and License](#citation-and-license)
 
 ## Build Environment
 
@@ -46,7 +50,7 @@ $python pose_estimation/media.py
 ```bash
 $python Venv/PandaWithIK.py
 ```
-
+Our program has great flexibility. If you want to modify it, you can complete the function through the instructions in [API.md](./API.md).  This document specified how our various components should be built and the specifications for input and output.
 ## Project Architecture
 
 ![image](./src/image/arc.png)
@@ -54,6 +58,7 @@ $python Venv/PandaWithIK.py
 - Capture the action of real people through the webcam.
 - Use pose estimation to capture location of the joints.
 - Using 3D engine as a platform, and built a virtual reality.
+- Use Multi-process to modulize the task of Pose Estimation and Panda3D, which facilitates division of labor and reduces latency during execution.
 
 ## Project Platform
 - We use  RTX3090 and Ub2 22.04 to develop.
@@ -93,7 +98,7 @@ Packaged into functions and No need to rewrite in other joints.
 - Add some art to the environment.
 - Ability to interact with other virtual users or AI avatars.
 
-## Citation / License
+## Citation and License
 
 Thanks to Mediapipe and panda3D developers for providing us with a good development environment, so that we can stand on the shoulders of giants and make a project that satisfies us. At the same time, I would like to thank the netizens in the panda3d community for their enthusiastic responses to questions on the 3D model and GitHub for providing the basis for inverse kinematics.
 
