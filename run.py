@@ -1,4 +1,4 @@
-import multiprocessing as mp 
+import multiprocessing as mp
 from threading import Thread
 import logging
 import time
@@ -10,6 +10,7 @@ import sys
 from Venv.PandaWithIK import Env
 from pose_estimation.media import Pose
 
+
 class controller():
     def __init__(self):
         logging.basicConfig(level=logging.INFO,
@@ -18,10 +19,11 @@ class controller():
         self.env = Env("./src/", debug=False)
         self.pe = Pose()
         self.Plist = [
-            Thread(target = self.penv, args = ()),
-            Thread(target = self.ppe , args = ())
+            Thread(target=self.penv, args=()),
+            Thread(target=self.ppe, args=())
         ]
         self.human_pose = None
+
     def run(self):
         # self.env.run()
         logging.info("Start thread")
@@ -43,7 +45,6 @@ class controller():
             time.sleep(5e-2)
         logging.info("Stop running, Closing all process...")
 
-
     def ppe(self, ):
         """
         This is the function which get the human pose estimation
@@ -57,9 +58,11 @@ class controller():
                 break
         cv2.destroyAllWindows()
 
+
 def main():
     env = controller()
     env.run()
-    
+
+
 if __name__ == "__main__":
     main()
