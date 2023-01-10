@@ -1,3 +1,5 @@
+import sys
+sys.path.append("./")
 import os
 import logging
 import json
@@ -8,9 +10,7 @@ from CCDIK.ik_chain import IKChain
 from direct.showbase.ShowBase import ShowBase
 from direct.actor.Actor import Actor
 from direct.task import Task
-import sys
 
-sys.path.append("./")
 
 
 class Env(ShowBase):

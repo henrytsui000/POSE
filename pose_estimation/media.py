@@ -1,7 +1,7 @@
+import sys
 sys.path.append("./Tools/")
 import our_draw
 import os
-import sys
 import cv2
 import json
 import math
